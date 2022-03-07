@@ -1,30 +1,34 @@
 <template>
   <section class="clientes">
-    <form @submit.prevent="salvar">
-      <div class="field is-horizontal">
-        <label for="razaoSocial" class="label"> Razão Social </label>
-        <input
-          type="text"
-          class="input"
-          v-model="currentCliente.razaoSocial"
-          id="razaoSocial"
-        />
-      </div>
-      <div class="field is-horizontal">
-        <label for="cnpjCpf" class="label"> CNPJ / CPF </label>
-        <input
-          type="text"
-          class="input"
-          v-model="currentCliente.cnpjCpf"
-          id="cnpjCpf"
-        />
-      </div>
-
-      <br>
-      <div class="field">
-        <button class="button" type="submit">Salvar</button>
-      </div>
-    </form>
+    <div class="column is-10">
+      <form @submit.prevent="salvar">
+        <div class="field is-horizontal">
+          <label for="razaoSocial" class="label"> Razão Social </label>
+          <input
+            type="text"
+            class="input"
+            v-model="currentCliente.razaoSocial"
+            id="razaoSocial"
+          />
+        </div>
+        <div class="field is-horizontal">
+          <label for="cnpjCpf" class="label"> CNPJ / CPF </label>
+          <input
+            type="text"
+            class="input"
+            v-model="currentCliente.cnpjCpf"
+            id="cnpjCpf"
+          />
+        </div>
+        <Endereco />
+        <Contato />
+        <Autorizacoes />
+        <br />
+        <div class="field">
+          <button class="button" type="submit">Salvar</button>
+        </div>
+      </form>
+    </div>
   </section>
 </template>
 
@@ -35,6 +39,9 @@ import { ADICIONA_CLIENTE, ALTERA_CLIENTE } from "@/store/tipo-mutacao";
 import { tipoNotificacao } from "@/interfaces/INotificacao";
 import useNotificador from "@/hooks/notificador";
 import ICliente from "@/interfaces/ICliente";
+import Endereco from "@/components/Endereco.vue";
+import Autorizacoes from "@/components/Autorizacoes.vue";
+import Contato from "@/components/Contato.vue";
 
 export default defineComponent({
   name: "Formulario",
@@ -84,36 +91,39 @@ export default defineComponent({
         this.currentCliente.logradouro = cliente.logradouro;
       } else {
         this.notificar(
-            tipoNotificacao.FALHA,
-            "Atenção",
-            "cliente não localizado"
-          );
+          tipoNotificacao.FALHA,
+          "Atenção",
+          "cliente não localizado"
+        );
       }
     }
   },
   methods: {
     salvar() {
       /* if (this.id) {
-        this.store.commit(ALTERA_CLIENTE, {
-          id: this.id,
-          nome: this.razaoSocial,
-        });
-        this.notificar(
-          tipoNotificacao.SUCESSO,
-          "Alterar",
-          "Cliente alterado com sucesso"
-        );
-      } else {
-        this.store.commit(ADICIONA_CLIENTE, this.razaoSocial);
-        this.notificar(
-          tipoNotificacao.SUCESSO,
-          "Novo",
-          "Cliente alterado com sucesso"
-        ); 
-      }*/
+              this.store.commit(ALTERA_CLIENTE, {
+                id: this.id,
+                nome: this.razaoSocial,
+              });
+              this.notificar(
+                tipoNotificacao.SUCESSO,
+                "Alterar",
+                "Cliente alterado com sucesso"
+              );
+            } else {
+              this.store.commit(ADICIONA_CLIENTE, this.razaoSocial);
+              this.notificar(
+                tipoNotificacao.SUCESSO,
+                "Novo",
+                "Cliente alterado com sucesso"
+              );
+            }*/
       //this.razaoSocial = "";
       this.$router.push("/clientes");
     },
+    validaCampo(campo: string){
+      campo != "" ? true : false
+    }
   },
   setup() {
     const store = useStore();
@@ -123,5 +133,6 @@ export default defineComponent({
       notificar,
     };
   },
+  components: { Endereco, Autorizacoes, Contato },
 });
 </script>
