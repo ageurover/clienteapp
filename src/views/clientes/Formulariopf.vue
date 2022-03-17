@@ -1,7 +1,8 @@
 <template>
   <section class="clientes">
     <div class="column is-10">
-      <form @submit.prevent="salvar">
+      <span class="title">Cadastro de Pessoa Física</span>
+      <form @submit.prevent="salvar" @input="validaCampo">
         <div class="field is-horizontal">
           <label for="razaoSocial" class="label"> Razão Social </label>
           <input
@@ -12,7 +13,7 @@
           />
         </div>
         <div class="field is-horizontal">
-          <label for="cnpjCpf" class="label"> CNPJ / CPF </label>
+          <label for="cnpjCpf" class="label"> CPF </label>
           <input
             type="text"
             class="input"
@@ -20,12 +21,18 @@
             id="cnpjCpf"
           />
         </div>
-        <Endereco />
-        <Contato />
-        <Autorizacoes />
+        <p class="endereco hidden">
+          <Endereco @endereco="buscaEndereco" />
+        </p>
+        <p class="contato hidden">
+          <Contato @contato="buscaContato" />
+        </p>
+        <p class="autorizacoes hidden">
+          <Autorizacoes @autoriza="buscaAutorizacao" />
+        </p>
         <br />
-        <div class="field">
-          <button class="button" type="submit">Salvar</button>
+        <div class="button-hidden field hidden">
+          <button class="button is-link" type="submit" @click="salvar">Salvar</button>
         </div>
       </form>
     </div>
@@ -42,6 +49,7 @@ import ICliente from "@/interfaces/ICliente";
 import Endereco from "@/components/Endereco.vue";
 import Autorizacoes from "@/components/Autorizacoes.vue";
 import Contato from "@/components/Contato.vue";
+import validarFormMixin from "@/mixins/validarForm";
 
 export default defineComponent({
   name: "Formulario",
@@ -119,11 +127,60 @@ export default defineComponent({
               );
             }*/
       //this.razaoSocial = "";
-      this.$router.push("/clientes");
+      //this.$router.push("/clientes");
+      console.log(this.currentCliente);
+      
     },
-    validaCampo(campo: string){
-      campo != "" ? true : false
-    }
+    validaCampo() {
+      let cnpjCpf =  this.currentCliente.cnpjCpf.replace(/[./,-]/g, "");
+      if(this.validaCpf(cnpjCpf) === true && cnpjCpf.length <= 11) {
+        this.removeClass(".endereco", cnpjCpf, "hidden");
+        return
+      }
+      if (cnpjCpf.length >= 11) {
+        this.addClass('.endereco', 'hidden')
+        this.notificar(
+          tipoNotificacao.ATENCAO,
+          "Verifique as Informações",
+          "O CPF digitado nao é válido"
+        );
+      }
+      console.log(this.currentCliente);
+      
+    },
+    buscaEndereco(endereco: ICliente) {
+      this.currentCliente.cep = endereco.cep;
+      this.currentCliente.numero = endereco.numero;
+      this.currentCliente.tipoImovel = endereco.tipoImovel;
+      this.currentCliente.logradouro = endereco.logradouro;
+      this.currentCliente.bairo = endereco.bairo;
+      this.currentCliente.pontoReferencia = endereco.pontoReferencia;
+      this.currentCliente.estado = endereco.estado;
+      this.currentCliente.cidade = endereco.cidade;
+      //REFATORAR ENQUANTO TIVER ALGUM CAMPO DO ENDERECO VAZIO O CONTATO FICAR INVISÍVEL
+      this.removeClass(".contato", this.currentCliente.cidade, "hidden");
+    },
+    buscaContato(contato:ICliente){
+      this.currentCliente.celular = contato.celular;
+      this.currentCliente.telefoneComercial = contato.telefoneComercial;
+      this.currentCliente.emailNfe = contato.emailNfe;
+      this.currentCliente.emailContato = contato.emailContato;
+      this.removeClass(
+        ".autorizacoes",
+        this.currentCliente.emailContato,
+        "hidden"
+      );
+    },
+    buscaAutorizacao(autoriza: ICliente){
+      this.currentCliente.autorizaDadosLgpd = autoriza.autorizaDadosLgpd;
+      this.currentCliente.autorizaMensagens = autoriza.autorizaMensagens;
+      this.currentCliente.autorizaPublicidade = autoriza.autorizaPublicidade;
+      this.removeClass(
+        ".button-hidden",
+        this.currentCliente.autorizaDadosLgpd,
+        "hidden"
+      );
+    },
   },
   setup() {
     const store = useStore();
@@ -133,6 +190,11 @@ export default defineComponent({
       notificar,
     };
   },
+  mixins: [validarFormMixin],
   components: { Endereco, Autorizacoes, Contato },
 });
 </script>
+
+<style>
+@import "../../assets/formStyle.css";
+</style>
