@@ -7,7 +7,8 @@
           type="text"
           placeholder="Procurar pelo CNPJ ou CPF"
           id="cnpjCliente"
-          v-model="cnpjCpf"
+          v-model.lazy="cnpjCpf"
+          @input="mask"
         />
         <span class="icon is-small is-left">
           <i class="fas fa-"></i>
@@ -19,21 +20,21 @@
     </div>
     <div class="field is-horizontal">
       <div>
-        <router-link to="/clientes/novopj" class="button">
+        <router-link to="/clientes/novo" class="button">
           <span class="icon is-small">
             <i class="fas fa-plus"></i>
           </span>
-          <span>Nova Empresa</span>
+          <span>Novo Cliente</span>
         </router-link>
       </div>
-      <div>
+      <!-- <div>
         <router-link to="/clientes/novopf" class="button">
           <span class="icon is-small">
             <i class="fas fa-plus"></i>
           </span>
           <span>Nova Pessoa Fisica</span>
         </router-link>
-      </div>
+      </div> -->
     </div>
     <div class="table-container">
       <table class="table is-responsive">
@@ -55,19 +56,9 @@
             <td>{{ cliente.telefoneComercial }}</td>
             <td>{{ cliente.celular }}</td>
             <td>
-              <span v-show="cliente.tipoPJF == 'PJ'">
+              <span v-show="cliente.tipoPJF == tipoCli">
                 <router-link
-                  :to="`/clientes/novopj/${cliente.id}`"
-                  class="button"
-                >
-                  <span class="icon is-small">
-                    <i class="fas fa-pencil-alt"></i>
-                  </span>
-                </router-link>
-              </span>
-              <span v-show="cliente.tipoPJF == 'PF'">
-                <router-link
-                  :to="`/clientes/novopf/${cliente.id}`"
+                  :to="`/clientes/novo/${cliente.id}`"
                   class="button"
                 >
                   <span class="icon is-small">
@@ -91,35 +82,51 @@ import { tipoNotificacao } from "@/interfaces/INotificacao";
 import useNotificador from "@/hooks/notificador";
 import ClienteDataService from "@/services/ClienteDataService";
 import ResponseData from "@/interfaces/ResponseData";
+import validarForm from "@/mixins/validarForm";
 
 export default defineComponent({
   name: "listaClientes",
   data() {
     return {
       cnpjCpf: "",
+      tipoCli: "",
+      id: ''
     };
   },
   methods: {
     searchCnpjCpf() {
+      this.validations()
       this.store.commit(LIMPAR_LISTA);
-      ClienteDataService.findByCnpjCpf(this.cnpjCpf)
-        .then((response: ResponseData) => {
+      ClienteDataService.findByCnpjCpf(this.cnpjCpf.replace(/\D/g, "")).then(
+        (response: ResponseData) => {
+          if (response.data.content[0] === undefined) {
+            this.notificar(
+              tipoNotificacao.FALHA,
+              "find by Cnpj",
+              "CPF/CNPJ " + this.cnpjCpf + " não localizado"
+            );
+            this.cnpjCpf = "";
+            return;
+          }
           this.store.commit(ADICIONA_CLIENTE, response.data.content[0]);
-          console.log(response.data);
+          this.id = response.data.content[0].id
+          
           this.notificar(
             tipoNotificacao.SUCESSO,
             "Sucesso",
-            "cliente localizado, pode realizar a edição!"
+            "Cliente localizado, pode realizar a edição!"
           );
-        })
-        .catch((e: Error) => {
-          console.log(e);
-          this.notificar(
-            tipoNotificacao.FALHA,
-            "find by Cnpj",
-            "cliente não localizado"
-          );
-        });
+          this.cnpjCpf = "";
+        }
+      );
+    },
+    mask(){
+      this.cnpjCpf = validarForm.methods.validaCnpjCpf(this.cnpjCpf)
+    },
+    validations(){
+      !validarForm.methods.validarNulo(this.cnpjCpf)
+        ? this.tipoCli = validarForm.methods.validaTipoCli(this.cnpjCpf)
+        : false
     },
   },
   setup() {
