@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Clientes from '../views/Clientes.vue'
-import Formulariopj from '../views/clientes/Formulariopj.vue'
-import Formulariopf from '../views/clientes/Formulariopf.vue'
+import Formulario from '../views/clientes/Formulario.vue'
 import Lista from '../views/clientes/Lista.vue'
 
 const rotas: RouteRecordRaw[] = [
@@ -20,31 +19,18 @@ const rotas: RouteRecordRaw[] = [
                 component: Lista
             },
             {
-                path: 'novopj',
-                name: 'Nova empresa',
-                component: Formulariopj,
-                children: [
-                    {
-                        path: ':id',
-                        name: 'Editar empresa',
-                        component: Formulariopj,
-                        props: true
-                    }
-                ]
-            },
-            {
-                path: 'novopf',
+                path: 'novo',
                 name: 'Novo Cliente',
-                component: Formulariopf,
+                component: Formulario,
                 children: [
                     {
                         path: ':id',
-                        name: 'Editar Cliente',
-                        component: Formulariopf,
+                        name: 'Editar cliente',
+                        component: Formulario,
                         props: true
                     }
                 ]
-            },
+            }
         ]
     }
 ]
