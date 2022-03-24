@@ -7,7 +7,7 @@
         type="text"
         v-model="endereco.cep"
         id="cep"
-        v-on:input="valida()"
+        @input="valida()"
       />
     </div>
     <div class="field is-horizontal">
@@ -22,13 +22,12 @@
     </div>
     <div class="field is-horizontal">
       <label for="tipoImovel" class="label">Tipo Imovel</label>
-      <input
-        class="input"
-        type="text"
-        v-model="endereco.tipoImovel"
-        id="tipoImovel"
-        v-on:input="valida()"
-      />
+      <div class="select">
+        <select v-model="endereco.tipoImovel" @input="valida()">
+          <option class="input" value="ALUGADO">ALUGADO</option>
+          <option value="PROPRIO">PROPRIO</option>
+        </select>
+      </div>
     </div>
     <div class="field is-horizontal">
       <label for="logradouro" class="label">Logradouro</label>
@@ -84,7 +83,11 @@
 </template>
 
 <script lang="ts">
+import useNotificador from "@/hooks/notificador";
 import ICliente from "@/interfaces/ICliente";
+import { tipoNotificacao } from "@/interfaces/INotificacao";
+import ResponseData from "@/interfaces/ResponseData";
+import CepDataService from "@/services/CepDataService";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -95,7 +98,36 @@ export default defineComponent({
     };
   },
   methods: {
+    searchCep() {
+      CepDataService.get(this.endereco.cep).then(
+        async (response: ResponseData) => {
+          if (await response.data.erro) {
+            this.clearFields();
+            this.notificar(
+              tipoNotificacao.ATENCAO,
+              "Invalido",
+              'CEP "' + this.endereco.cep + '" não foi encontrado'
+            );
+          } else {
+            this.endereco.cidade = response.data.localidade;
+            this.endereco.estado = response.data.uf;
+            this.endereco.bairo = response.data.bairro;
+            this.endereco.numero = response.data.complemento;
+            this.endereco.logradouro = response.data.logradouro;
+          }
+        }
+      );
+    },
+    clearFields() {
+      this.endereco.cidade = "";
+      this.endereco.estado = "";
+      this.endereco.bairo = "";
+      this.endereco.numero = "";
+      this.endereco.logradouro = "";
+    },
     valida() {
+      if (this.endereco.cep.length < 8) this.clearFields();
+      if (this.endereco.cep.length === 8) this.searchCep();
       this.$emit("endereco", {
         cep: this.endereco.cep,
         numero: this.endereco.numero,
@@ -107,6 +139,12 @@ export default defineComponent({
         cidade: this.endereco.cidade,
       });
     },
+  },
+  setup() {
+    const { notificar } = useNotificador();
+    return {
+      notificar,
+    };
   },
 });
 </script>
