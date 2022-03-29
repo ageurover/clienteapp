@@ -1,47 +1,47 @@
 <template>
   <header>
-      <h1>
-        <img src="../assets/logo.png" alt="">  
-      </h1>
-      <nav class="panel mt-5">
-        <ul >
-          <li>
-            <router-link to="/clientes" class="link">              
-              <i class="far fa-user"></i>
-              Clientes
-            </router-link>
-          </li>
-        </ul> 
-      </nav>
+    <h1>
+      <img src="../assets/logo.png" alt="" />
+    </h1>
+    <nav class="panel mt-5">
+      <ul>
+        <li >
+          <router-link to="/clientes" class="button is-small is-fullwidth is-info is-outlined">
+            <i class="far fa-user"></i>
+            Clientes
+          </router-link>
+        </li>
+      </ul>
+    </nav>
   </header>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'BarraLateral',
-  emits: ['aoTemaAlterado'],
-  data () {
+  name: "BarraLateral",
+  emits: ["aoTemaAlterado"],
+  data() {
     return {
-      modoEscuroAtivo: false
-    }
+      modoEscuroAtivo: false,
+    };
   },
   computed: {
-    textoBotao () {
+    textoBotao() {
       if (this.modoEscuroAtivo) {
-        return 'Desativar modo escuro'
+        return "Desativar modo escuro";
       }
-      return 'Ativar modo escuro'
-    }
+      return "Ativar modo escuro";
+    },
   },
   methods: {
-    alterarTema () {
-      this.modoEscuroAtivo = !this.modoEscuroAtivo
-      this.$emit('aoTemaAlterado', this.modoEscuroAtivo)
-    }
-  }
-})
+    alterarTema() {
+      this.modoEscuroAtivo = !this.modoEscuroAtivo;
+      this.$emit("aoTemaAlterado", this.modoEscuroAtivo);
+    },
+  },
+});
 </script>
 
 <style scoped>
@@ -52,10 +52,16 @@ header {
   height: 100vh;
   text-align: center;
 }
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 887px) {
   header {
     padding: 2.5rem;
     height: auto;
+  }
+  main{
+    display: flex;
+  }
+  .panel li {
+    display: inline;
   }
 }
 .panel li {
@@ -64,10 +70,10 @@ header {
 .link {
   color: #fff;
 }
-.link:hover{
-  color: #FAF0CA;
+.link:hover {
+  color: #faf0ca;
 }
-.link:router-link-active{
-  color: #FAF0CA;
+.link:router-link-active {
+  color: #faf0ca;
 }
 </style>
