@@ -3,7 +3,7 @@ import { notificacaoMixin as n } from "@/mixins/notificar";
 
 const validarForm = {
   methods: {
-    validaCnpjCpf(cnpjCpf: string): string {
+    addMask(cnpjCpf: string): string {
       cnpjCpf = cnpjCpf.replace(/\D/g, "");
       if (cnpjCpf.length <= 11) {
         cnpjCpf = this.maskCpf(cnpjCpf);
@@ -13,9 +13,10 @@ const validarForm = {
       return cnpjCpf
     },
     validaTipoCli(cnpjCpf: string): string {
-      if (cnpjCpf.length <= 14) {
+      cnpjCpf = cnpjCpf.replace(/\D/g, "");
+      if (cnpjCpf.length <= 11) {
         return "PF";
-      } else if (cnpjCpf.length <= 18) {
+      } else if (cnpjCpf.length <= 14) {
         return "PJ";
       }
       return "";
@@ -47,6 +48,9 @@ const validarForm = {
         return true;
       }
     },
+    buscaIdURL(){
+      return window.location.hash.replace(/[/#clientesnovo]/g, "");
+    }
   },
 };
 
