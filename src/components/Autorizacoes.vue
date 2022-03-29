@@ -1,72 +1,120 @@
 <template>
-  <div>
+  <div @change="enviaDados" @click="validaTipoCli" class="autorizacoes">
     <div class="field is-horizontal">
+      <input
+        class="checkbox"
+        type="checkbox"
+        id="autorizaDadosLgpd"
+        v-model="a.autorizaDadosLgpd"
+      />
       <label class="checkbox">
-        <input
-          class="checkbox block-with-text"
-          type="checkbox"
-          id="autorizaDadosLgpd"
-          v-model="autorizacoes.autorizaDadosLgpd"
-          v-on:change="enviaDados()"
-        />
-        Autorizo a empresa Brasil Distribuidora, em atenção à Lei Geral de
-        Proteção a Dados (Lei 13.709/18), a coleta, processamento, análise,
-        armazenamento e uso dos meus dados com a finalidade de cadastros,
-        atendimento, agendamentos, orçamentos, entregas, pedidos, emissão de
-        notas fiscais, duplicatas, envio de orçamento, publicidade e
-        compartilhamento entre parceiros
-        <span class="tag is-warning is-light">Lei mais</span>
+        <span v-show="!state">
+          Autorizo a empresa Brasil Distribuidora, em atenção à Lei Geral de
+          Proteção a Dados (Lei 13.709/18)
+          <p
+            v-show="!state"
+            class="button is-small is-info is-outlined"
+            @click="state = !state"
+          >
+            Ler mais
+          </p>
+        </span>
+        <span v-show="state">
+          Autorizo a empresa Brasil Distribuidora, em atenção à Lei Geral de
+          Proteção a Dados (Lei 13.709/18) a coleta, processamento, análise,
+          armazenamento e uso dos meus dados com a finalidade de cadastros,
+          atendimento, agendamentos, orçamentos, entregas, pedidos, emissão de
+          notas fiscais, duplicatas, envio de orçamento, publicidade e
+          compartilhamento entre parceiros
+          <p
+            v-show="state"
+            class="button is-small is-info is-outlined"
+            @click="state = !state"
+          >
+            Ler menos
+          </p>
+        </span>
       </label>
     </div>
-    <div class="field is-horizontal">
-      <label class="checkbox">
-        <input
-          class="checkbox"
-          type="checkbox"
-          id="autorizaMensagens"
-          v-model="autorizacoes.autorizaMensagens"
-          v-on:change="enviaDados()"
-        />
-        Autorizo envio de orçamentos/pedidos por mensagem
-      </label>
+    <div class="field is-horizontal" v-show="tipoCli == 'PJ'">
+      <input
+        class="checkbox"
+        type="checkbox"
+        id="autorizaMensagens"
+        v-model="a.autorizaMensagens"
+      />
+      <label class="checkbox"
+        >Autorizo envio de orçamentos/pedidos por mensagem</label
+      >
     </div>
-    <div class="field is-horizontal">
-      <label class="checkbox">
-        <input
-          class="checkbox"
-          type="checkbox"
-          id="autorizaPublicidade"
-          v-model="autorizacoes.autorizaPublicidade"
-          v-on:change="enviaDados()"
-        />
-        Autorizo envio de publicidade
-      </label>
+    <div class="field is-horizontal" v-show="tipoCli == 'PJ'">
+      <input
+        class="checkbox"
+        type="checkbox"
+        id="autorizaPublicidade"
+        v-model="a.autorizaPublicidade"
+      />
+      <label class="checkbox">Autorizo envio de publicidade</label>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import ICliente from "@/interfaces/ICliente";
-import { defineComponent } from "vue";
+import validarForm from "@/mixins/validarForm";
+import { useStore } from "@/store";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   data() {
     return {
-      autorizacoes: {} as ICliente,
+      a: {} as ICliente,
+      state: false,
+      idCli: "",
+      tipoCli: "",
     };
+  },
+  async mounted() {
+    this.idCli = validarForm.methods.buscaIdURL();
+    const cliente = this.store.state.clientes.find(
+      (cli) => cli.id == this.idCli
+    );
+    if (cliente != null) {
+      this.a.autorizaConsultaCredito = cliente.autorizaConsultaCredito;
+      this.a.autorizaConsultaReferencia = cliente.autorizaConsultaReferencia;
+      this.a.autorizaDadosLgpd = cliente.autorizaDadosLgpd;
+      this.a.autorizaMensagens = cliente.autorizaMensagens;
+      this.a.autorizaPublicidade = cliente.autorizaPublicidade;
+      this.a.referencias = cliente.referencias;
+      this.tipoCli = cliente.tipoPJF;
+    }
   },
   methods: {
     enviaDados() {
       this.$emit("autoriza", {
-        autorizaPublicidade: this.autorizacoes.autorizaPublicidade,
-        autorizaDadosLgpd: this.autorizacoes.autorizaDadosLgpd,
-        autorizaMensagens: this.autorizacoes.autorizaMensagens,
+        autorizaPublicidade: this.a.autorizaPublicidade,
+        autorizaDadosLgpd: this.a.autorizaDadosLgpd,
+        autorizaMensagens: this.a.autorizaMensagens,
       });
+      this.validaTipoCli;
     },
+    validaTipoCli() {
+      this.tipoCli = this.clientes[0].tipoPJF
+    },
+  },
+  setup() {
+    const store = useStore();
+    return {
+      clientes: computed(() => store.state.clientes),
+      store,
+    };
   },
 });
 </script>
 
-<style>
+<style scoped>
 @import "../assets/formStyle.css";
+.autorizacoes{
+  margin: 25px;
+}
 </style>
