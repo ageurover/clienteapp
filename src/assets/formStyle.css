@@ -2,11 +2,14 @@ form {
   align-items: center;
   margin: 10px;
   display: grid;
-  max-width: 668px;
+  max-width: 768px;
 }
 .field {
   max-width: 100%;
   display: inline-block;
+}
+.select{
+  width: 100%;
 }
 .label {
   display: flex;
@@ -20,7 +23,7 @@ form {
 
 @media screen and (max-width: 768px) {
   .field {
-    max-width: 500px;
+    max-width: 450px;
     border-collapse: collapse;
     border-spacing: 0;
     display: block;
