@@ -49,8 +49,6 @@ export default defineComponent({
     const cliente = this.store.state.clientes.find(
       (cli) => cli.id == this.idCli
     );
-    console.log(this.clientes);
-
     if (cliente != null) {
       this.c.emailNfe = cliente.emailNfe;
       this.c.emailContato = cliente.emailContato;
