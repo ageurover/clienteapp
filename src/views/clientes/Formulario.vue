@@ -48,8 +48,13 @@
         </div>
         <Endereco @endereco="buscaEndereco" />
         <Contato @contato="buscaContato" />
-        <Autorizacoes @autoriza="buscaAutorizacao" />
-        <LimitePrazo v-show="currentCliente.tipoPJF == 'PJ'" />
+        <LimitePrazo
+          @limite-prazo="buscaLimitePrazo"
+        />
+        <Autorizacoes
+          @autoriza="buscaAutorizacao"
+          :tipoCli="currentCliente.tipoPJF"
+        />
         <div class="field">
           <Button name="Salvar" tipo="is-info is-outlined" icon="fa-plus" />
         </div>
@@ -77,6 +82,7 @@ import ResponseData from "@/interfaces/ResponseData";
 import validarForm from "@/mixins/validarForm";
 import Button from "@/components/Button.vue";
 import LimitePrazo from "@/components/LimitePrazo/LimitePrazo.vue";
+import IReferencia from "@/interfaces/IReferencia";
 
 export default defineComponent({
   name: "Formulario",
@@ -194,6 +200,9 @@ export default defineComponent({
       this.currentCliente.autorizaDadosLgpd = autoriza.autorizaDadosLgpd;
       this.currentCliente.autorizaMensagens = autoriza.autorizaMensagens;
       this.currentCliente.autorizaPublicidade = autoriza.autorizaPublicidade;
+    },
+    buscaLimitePrazo(limitePrazo: IReferencia) {
+      this.currentCliente.referencias = limitePrazo
     },
     async searchCliByID(idCli: string) {
       if (idCli) {
