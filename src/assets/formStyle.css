@@ -2,7 +2,7 @@ form {
   align-items: center;
   margin: 10px;
   display: grid;
-  max-width: 768px;
+  max-width: 668px;
 }
 .field {
   max-width: 100%;
@@ -23,7 +23,6 @@ form {
 
 @media screen and (max-width: 768px) {
   .field {
-    max-width: 450px;
     border-collapse: collapse;
     border-spacing: 0;
     display: block;
