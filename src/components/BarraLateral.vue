@@ -52,13 +52,10 @@ header {
   height: 100vh;
   text-align: center;
 }
-@media only screen and (max-width: 887px) {
+@media only screen and (max-width: 768px) {
   header {
     padding: 2.5rem;
     height: auto;
-  }
-  main{
-    display: flex;
   }
   .panel li {
     display: inline;
