@@ -1,5 +1,5 @@
 <template>
-  <div @change="enviaDados" @click="validaTipoCli" class="autorizacoes">
+  <div @change="enviaDados" class="autorizacoes">
     <div class="field is-horizontal">
       <input
         class="checkbox"
@@ -36,7 +36,7 @@
         </span>
       </label>
     </div>
-    <div class="field is-horizontal" v-show="tipoCli == 'PJ'">
+    <div class="field is-horizontal" v-show="tipoCli === 'PJ'">
       <input
         class="checkbox"
         type="checkbox"
@@ -47,7 +47,7 @@
         >Autorizo envio de orçamentos/pedidos por mensagem</label
       >
     </div>
-    <div class="field is-horizontal" v-show="tipoCli == 'PJ'">
+    <div class="field is-horizontal" v-show="tipoCli === 'PJ'">
       <input
         class="checkbox"
         type="checkbox"
@@ -55,6 +55,24 @@
         v-model="a.autorizaPublicidade"
       />
       <label class="checkbox">Autorizo envio de publicidade</label>
+    </div>
+    <div class="field is-horizontal" v-show="tipoCli === 'PJ'">
+      <input
+        class="checkbox"
+        type="checkbox"
+        id="autorizaPublicidade"
+        v-model="a.autorizaConsultaReferencia"
+      />
+      <label class="checkbox">Autorizo a consulta de meus dados (CNPJ e CPF dos sócios) nos órgãos de proteção ao crédito</label>
+    </div>
+    <div class="field is-horizontal" v-show="tipoCli === 'PJ'">
+      <input
+        class="checkbox"
+        type="checkbox"
+        id="autorizaPublicidade"
+        v-model="a.autorizaConsultaCredito"
+      />
+      <label class="checkbox">Autorizo a consulta de crédito em meu CNPJ / CPF</label>
     </div>
   </div>
 </template>
@@ -71,9 +89,9 @@ export default defineComponent({
       a: {} as ICliente,
       state: false,
       idCli: "",
-      tipoCli: "",
     };
   },
+  props: ['tipoCli'],
   async mounted() {
     this.idCli = validarForm.methods.buscaIdURL();
     const cliente = this.store.state.clientes.find(
@@ -86,7 +104,6 @@ export default defineComponent({
       this.a.autorizaMensagens = cliente.autorizaMensagens;
       this.a.autorizaPublicidade = cliente.autorizaPublicidade;
       this.a.referencias = cliente.referencias;
-      this.tipoCli = cliente.tipoPJF;
     }
   },
   methods: {
@@ -95,11 +112,9 @@ export default defineComponent({
         autorizaPublicidade: this.a.autorizaPublicidade,
         autorizaDadosLgpd: this.a.autorizaDadosLgpd,
         autorizaMensagens: this.a.autorizaMensagens,
+        autorizaConsultaCredito: this.a.autorizaConsultaCredito,
+        autorizaConsultaReferencia: this.a.autorizaConsultaReferencia
       });
-      this.validaTipoCli;
-    },
-    validaTipoCli() {
-      this.tipoCli = this.clientes[0].tipoPJF
     },
   },
   setup() {
@@ -114,7 +129,7 @@ export default defineComponent({
 
 <style scoped>
 @import "../assets/formStyle.css";
-.autorizacoes{
-  margin: 25px;
+.autorizacoes, .field{
+  margin: 0 0 25px;
 }
 </style>
