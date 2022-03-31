@@ -52,6 +52,9 @@ export default defineComponent({
       id: "",
     };
   },
+  mounted(){
+    this.store.commit(LIMPAR_LISTA)
+  },
   methods: {
     searchCnpjCpf() {
       this.validations();
