@@ -3,4 +3,5 @@ export default interface IDocumento {
     tipoDoc: string,
     dataUpload: Date,
     imageDoc: BinaryType
+    name: String
 }
