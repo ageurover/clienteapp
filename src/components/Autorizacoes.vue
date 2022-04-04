@@ -129,7 +129,7 @@ export default defineComponent({
 
 <style scoped>
 @import "../assets/formStyle.css";
-.autorizacoes, .field{
-  margin: 0 0 25px;
+.autorizacoes{
+  margin: 15px;
 }
 </style>
