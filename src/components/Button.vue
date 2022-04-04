@@ -1,10 +1,10 @@
 <template>
-  <button class="control button" :class="tipo" @click="action">
+  <span class="control button" :class="tipo" @click="action">
     <p v-show="name">{{ name }}</p>
     <span class="icon">
       <i class="fa" :class="icon" />
     </span>
-  </button>
+  </span>
 </template>
 
 <script lang="ts">
