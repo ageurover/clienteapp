@@ -1,16 +1,41 @@
 <template>
   <div class="limite-prazo">
-    <span class="title is-3">Limite e Prazo</span>
-    <Documentos />
-    <br />
-    <div class="referencias">
-      <span class="title is-5"> - Empresas Referencias</span>
-      <div class="columns">
-        <div class="column is-two-fifths">
-          <FormReferencia @enviar="buscaReferencias" />
-        </div>
-        <div id="tb-ref" class="column">
-          <TableReferencias :refs="referencias" />
+    <div class="field is-horizontal">
+      <label for="cnpjCpf" class="label"> Solicitar Limite e Prazo? </label>
+      <div class="radio-group">
+        <label class="radio">
+          <input
+            type="radio"
+            name="sim"
+            :checked="solicitou"
+            @click="solicitou = true"
+          />
+          SIM
+        </label>
+        <label class="radio">
+          <input
+            type="radio"
+            name="nao"
+            :checked="!solicitou"
+            @click="solicitou = false"
+          />
+          NÃO
+        </label>
+      </div>
+    </div>
+    <div v-show="solicitou">
+      <span class="title is-3">Limite e Prazo</span>
+      <Documentos />
+      <br />
+      <div class="referencias">
+        <span class="title is-5"> - Empresas Referencias</span>
+        <div class="columns">
+          <div class="column is-two-fifths">
+            <FormReferencia @enviar="buscaReferencias" />
+          </div>
+          <div id="tb-ref" class="column">
+            <TableReferencias :refs="referencias" />
+          </div>
         </div>
       </div>
     </div>
@@ -32,6 +57,7 @@ export default defineComponent({
     return {
       referencias: [] as IReferencia[],
       idCli: "",
+      solicitou: false,
     };
   },
   async mounted() {
@@ -47,7 +73,7 @@ export default defineComponent({
   methods: {
     buscaReferencias(refs: IReferencia) {
       this.referencias.push(refs);
-      this.$emit("limitePrazo", {...this.referencias});
+      this.$emit("limitePrazo", { ...this.referencias });
     },
   },
   setup() {
