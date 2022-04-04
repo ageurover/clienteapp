@@ -10,7 +10,7 @@
     </router-link>
 
     <div class="column is-10" @change="salvaStore">
-      <span class="title"> Cadastrar Cliente {{ tipoCli }} </span>
+      <span class="title"> Cadastro Cliente {{ tipoCli }} </span>
       <form @submit.prevent="salvar" class="box">
         <div class="field is-horizontal">
           <Button
@@ -24,6 +24,7 @@
             icon="fa-pen"
             tipo="is-link is-small is-outlined"
             v-show="idCli"
+            @action="edit = !edit"
             name="Editar cliente"
           />
         </div>
@@ -34,6 +35,7 @@
             class="input"
             v-model="currentCliente.razaoSocial"
             id="razaoSocial"
+            :disabled="edit"
           />
         </div>
         <div class="field is-horizontal">
@@ -43,20 +45,25 @@
             class="input"
             v-model="currentCliente.cnpjCpf"
             id="cnpjCpf"
+            :disabled="edit"
             @input="validaCnpjCpf"
           />
         </div>
-        <Endereco @endereco="buscaEndereco" />
-        <Contato @contato="buscaContato" />
-        <LimitePrazo
-          @limite-prazo="buscaLimitePrazo"
-        />
+        <Endereco @endereco="buscaEndereco" v-show="!edit" />
+        <Contato @contato="buscaContato" v-show="!edit" />
+        <LimitePrazo @limite-prazo="buscaLimitePrazo" v-show="!edit" />
         <Autorizacoes
           @autoriza="buscaAutorizacao"
           :tipoCli="currentCliente.tipoPJF"
+          v-show="!edit"
         />
         <div class="field">
-          <Button name="Salvar" tipo="is-info is-outlined" icon="fa-plus" />
+          <Button
+            name="Salvar"
+            tipo="is-info is-outlined"
+            icon="fa-plus"
+            :disabled="edit"
+          />
         </div>
       </form>
     </div>
@@ -92,11 +99,13 @@ export default defineComponent({
       tipoCli: "",
       idCli: "",
       limitePrazo: false,
+      edit: true,
     };
   },
   async mounted() {
     this.store.commit(LIMPAR_LISTA);
     this.idCli = validarForm.methods.buscaIdURL();
+    this.idCli ? (this.edit = true) : (this.edit = false);
     await this.searchCliByID(this.idCli);
     if (this.idCli) {
       const cliente = this.store.state.clientes.find(
@@ -105,6 +114,7 @@ export default defineComponent({
       if (cliente != null) {
         this.currentCliente.id = cliente.id;
         this.currentCliente.tipoPJF = cliente.tipoPJF;
+        this.tipoCli = this.currentCliente.tipoPJF;
         this.currentCliente.quantidadeCheckout = cliente.quantidadeCheckout;
         this.currentCliente.cnpjCpf = cliente.cnpjCpf;
         this.currentCliente.inscricaoEstadual = cliente.inscricaoEstadual;
@@ -202,7 +212,7 @@ export default defineComponent({
       this.currentCliente.autorizaPublicidade = autoriza.autorizaPublicidade;
     },
     buscaLimitePrazo(limitePrazo: IReferencia) {
-      this.currentCliente.referencias = limitePrazo
+      this.currentCliente.referencias = limitePrazo;
     },
     async searchCliByID(idCli: string) {
       if (idCli) {
