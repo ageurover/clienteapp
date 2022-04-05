@@ -20,9 +20,6 @@
         <td>
           <span :v-show="cliente.tipoPJF == tipoCli">
             <router-link :to="`/clientes/novo/${cliente.id}`" >
-              <!-- <span class="icon is-small">
-                <i class="fas fa-pencil-alt"></i>
-              </span> -->
               <Button icon="fa-pencil-alt" tipo="is-info is-outlined is-small is-responsive"/>
             </router-link>
           </span>
