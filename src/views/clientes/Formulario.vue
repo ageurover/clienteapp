@@ -58,7 +58,7 @@
           v-show="!edit"
         />
         <div class="field">
-          <Button name="Salvar" tipo="is-info is-outlined" icon="fa-plus" />
+          <Button name="Salvar" @click="salvar" tipo="is-info is-outlined" icon="fa-plus" />
         </div>
       </form>
     </div>
@@ -73,7 +73,6 @@ import {
   ALTERA_CLIENTE,
   LIMPAR_LISTA,
 } from "@/store/tipo-mutacao";
-import { tipoNotificacao } from "@/interfaces/INotificacao";
 import useNotificador from "@/hooks/notificador";
 import ICliente from "@/interfaces/ICliente";
 import Endereco from "@/components/Endereco.vue";
