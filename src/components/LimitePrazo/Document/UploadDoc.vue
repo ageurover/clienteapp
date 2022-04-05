@@ -41,6 +41,7 @@ import IDocumento from "@/interfaces/IDocumento";
 import { defineComponent } from "vue";
 import useNotificador from "@/hooks/notificador";
 import { tipoNotificacao } from "@/interfaces/INotificacao";
+import Notificacoes from "@/mixins/notificacoes";
 
 export default defineComponent({
   name: "DocsAnalise",
@@ -63,19 +64,9 @@ export default defineComponent({
     upload(evt: Event) {
       if (this.selectDesabiled(this.selectDoc)) {
         if (this.selectDoc == "") {
-          this.notificar(
-            tipoNotificacao.FALHA,
-            "Inválido",
-            "Selecione um documento!"
-          );
+          Notificacoes.documentoNull();
         } else {
-          this.notificar(
-            tipoNotificacao.ATENCAO,
-            "Documento Duplicado",
-            'O documento "' +
-              this.selectDoc +
-              '" ja foi inserido. Selecione outro!'
-          );
+          Notificacoes.documentoDuplicado(this.selectDoc);
         }
         return;
       }

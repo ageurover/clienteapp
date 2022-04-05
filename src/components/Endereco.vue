@@ -48,8 +48,8 @@
 <script lang="ts">
 import useNotificador from "@/hooks/notificador";
 import ICliente from "@/interfaces/ICliente";
-import { tipoNotificacao } from "@/interfaces/INotificacao";
 import ResponseData from "@/interfaces/ResponseData";
+import Notificacoes from "@/mixins/notificacoes";
 import validarForm from "@/mixins/validarForm";
 import CepDataService from "@/services/CepDataService";
 import { useStore } from "@/store";
@@ -86,11 +86,7 @@ export default defineComponent({
       CepDataService.get(this.e.cep).then(async (response: ResponseData) => {
         if (await response.data.erro) {
           this.clearFields();
-          this.notificar(
-            tipoNotificacao.ATENCAO,
-            "Invalido",
-            'CEP "' + this.e.cep + '" não foi encontrado'
-          );
+          Notificacoes.cepNotFound(this.e.cep)
         } else {
           this.e.cidade = response.data.localidade;
           this.e.estado = response.data.uf;

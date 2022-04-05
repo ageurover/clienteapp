@@ -58,12 +58,7 @@
           v-show="!edit"
         />
         <div class="field">
-          <Button
-            name="Salvar"
-            tipo="is-info is-outlined"
-            icon="fa-plus"
-            :disabled="edit"
-          />
+          <Button name="Salvar" tipo="is-info is-outlined" icon="fa-plus" />
         </div>
       </form>
     </div>
@@ -90,6 +85,7 @@ import validarForm from "@/mixins/validarForm";
 import Button from "@/components/Button.vue";
 import LimitePrazo from "@/components/LimitePrazo/LimitePrazo.vue";
 import IReferencia from "@/interfaces/IReferencia";
+import Notificacoes from "@/mixins/notificacoes";
 
 export default defineComponent({
   name: "Formulario",
@@ -122,11 +118,7 @@ export default defineComponent({
         this.currentCliente.nomeFanstasia = cliente.nomeFanstasia;
         this.currentCliente.ramoAtividade = cliente.ramoAtividade;
       } else {
-        this.notificar(
-          tipoNotificacao.FALHA,
-          "Atenção",
-          "cliente não localizado"
-        );
+        Notificacoes.clienteNotFound();
       }
     }
   },
@@ -138,51 +130,30 @@ export default defineComponent({
         ClienteDataService.update(this.idCli, this.currentCliente).then(
           (response: ResponseData) => {
             console.log(response);
-            this.notificar(
-              tipoNotificacao.SUCESSO,
-              "Sucesso",
-              "Cliente alterado com sucesso"
-            );
+            Notificacoes.clienteUpdateSucess();
           },
           (e: Error) => {
             console.log(e);
-            this.notificar(
-              tipoNotificacao.FALHA,
-              "Fahou",
-              "Dados cliente nao foram atualizados " + e
-            );
+            Notificacoes.clienteUpdateError(e);
           }
         );
       } else {
         if (!this.findByCnpjCpf(this.currentCliente.cnpjCpf)) {
-          this.notificar(
-            tipoNotificacao.ATENCAO,
-            "Duplicado",
-            "CPF/CNPJ " + this.currentCliente.cnpjCpf + " ja existe"
-          );
+          Notificacoes.clienteDuplicado(this.currentCliente.cnpjCpf);
         } else {
           ClienteDataService.create(this.currentCliente).then(
             (response: ResponseData) => {
               this.store.commit(ADICIONA_CLIENTE, response.data);
-              this.notificar(
-                tipoNotificacao.SUCESSO,
-                "Novo",
-                "Cliente incluido com sucesso"
-              );
+              Notificacoes.clienteSaveSucess();
               this.$router.push("/clientes");
             },
             (e: Error) => {
               console.log(e);
-              this.notificar(
-                tipoNotificacao.FALHA,
-                "Erro",
-                "Cliente nao foi incluido"
-              );
+              Notificacoes.clienteSaveError(e);
             }
           );
         }
       }
-      console.log(this.currentCliente);
     },
     salvaStore() {
       this.store.commit(ADICIONA_CLIENTE, this.currentCliente);
@@ -228,25 +199,12 @@ export default defineComponent({
       ClienteDataService.delete(this.currentCliente.id).then(
         (response: ResponseData) => {
           console.log(response);
-          this.notificar(
-            tipoNotificacao.SUCESSO,
-            "Deletado",
-            "CLIENTE " +
-              this.currentCliente.razaoSocial +
-              " deletado com sucesso"
-          );
+          Notificacoes.clienteDeletedSucess();
           this.$router.push("/clientes");
         },
         (e: Error) => {
           console.log(e);
-          this.notificar(
-            tipoNotificacao.FALHA,
-            "ERRO",
-            "Não foi possivel deletar o cliente " +
-              this.currentCliente.razaoSocial +
-              " - " +
-              e
-          );
+          Notificacoes.clienteDeletedError(this.currentCliente.razaoSocial, e);
         }
       );
     },
@@ -265,11 +223,7 @@ export default defineComponent({
       ClienteDataService.findByCnpjCpf(cnpjCpf).then(
         (response: ResponseData) => {
           if (response.data.content.length > 0) {
-            this.notificar(
-              tipoNotificacao.FALHA,
-              "Duplicado",
-              "CPF/CNPJ " + this.currentCliente.cnpjCpf + " ja existe"
-            );
+            Notificacoes.clienteDuplicado(this.currentCliente.cnpjCpf);
             return true;
           }
         }
