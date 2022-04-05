@@ -39,8 +39,6 @@
 <script lang="ts">
 import IDocumento from "@/interfaces/IDocumento";
 import { defineComponent } from "vue";
-import useNotificador from "@/hooks/notificador";
-import { tipoNotificacao } from "@/interfaces/INotificacao";
 import Notificacoes from "@/mixins/notificacoes";
 
 export default defineComponent({
@@ -62,12 +60,7 @@ export default defineComponent({
   emits: ["documento"],
   methods: {
     upload(evt: Event) {
-      if (this.selectDesabiled(this.selectDoc)) {
-        if (this.selectDoc == "") {
-          Notificacoes.documentoNull();
-        } else {
-          Notificacoes.documentoDuplicado(this.selectDoc);
-        }
+      if (!this.documentSelected()) {
         return;
       }
       const target = evt.target as HTMLInputElement;
@@ -76,7 +69,15 @@ export default defineComponent({
       this.doc.dataUpload = new Date();
       this.doc.name = this.selectDoc;
       this.doc.tipoDoc = files[0].type;
-      //this.doc.imageDoc = files[0]
+      this.doc.dataUrl = this.loadFile(files[0])
+
+      /* const reader = new FileReader();
+
+      reader.onload = function() {
+        reader.result;
+      };
+
+      reader.readAsDataURL(files[0]); */
 
       this.$emit("documento", { ...this.doc });
 
@@ -89,12 +90,22 @@ export default defineComponent({
       });
       return r;
     },
-  },
-  setup() {
-    const { notificar } = useNotificador();
-    return {
-      notificar,
-    };
+    loadFile(file: Blob) {
+      const obj_url = URL.createObjectURL(file);
+      return obj_url;
+    }, 
+    documentSelected() {
+      if (this.selectDesabiled(this.selectDoc)) {
+        if (this.selectDoc == "") {
+          Notificacoes.documentoNull();
+          return false;
+        } else {
+          Notificacoes.documentoDuplicado(this.selectDoc);
+          return false;
+        }
+      }
+      return true;
+    },
   },
 });
 </script>
