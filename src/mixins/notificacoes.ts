@@ -4,11 +4,18 @@ import { tipoNotificacao } from "@/interfaces/INotificacao";
 const { notificar } = useNotificador();
 
 const Notificacoes = {
-  clienteNotFound() {
+  clienteNotFound(e: Error) {
     return notificar(
       tipoNotificacao.FALHA,
-      "Atenção",
-      "cliente não localizado"
+      "Erro",
+      "cliente não localizado " + e
+    );
+  },
+  clientFoundSucess(){
+    return notificar(
+      tipoNotificacao.SUCESSO,
+      "Sucesso",
+      "Cliente localizado com sucesso"
     );
   },
   clienteUpdateSucess() {
@@ -21,7 +28,7 @@ const Notificacoes = {
   clienteUpdateError(e: Error) {
     return notificar(
       tipoNotificacao.FALHA,
-      "Fahou",
+      "Erro",
       "Dados cliente nao foram atualizados " + e
     );
   },
@@ -81,6 +88,27 @@ const Notificacoes = {
       'O documento "' + doc + '" ja foi inserido. Selecione outro!'
     );
   },
+  referenciaNula(){
+    return notificar(
+      tipoNotificacao.ATENCAO,
+      "Inválido",
+      'Preencha todos os campos!'
+    );
+  },
+  clientSucessSearch(){
+    return notificar(
+      tipoNotificacao.SUCESSO,
+      "Sucesso",
+      "Cliente localizado, pode realizar a edição!"
+    );
+  },
+  clientErrorSearch(cnpjCpf: string){
+    return notificar(
+      tipoNotificacao.FALHA,
+      "find by Cnpj",
+      "CPF/CNPJ " + cnpjCpf + " não localizado"
+    );
+  }
 };
 
 export default Notificacoes;

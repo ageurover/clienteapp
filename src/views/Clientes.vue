@@ -1,6 +1,5 @@
 <template>
   <div class="clientes">
-    <h1 class="title">clientes</h1>
     <router-view></router-view>
   </div>
 </template>
