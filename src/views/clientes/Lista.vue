@@ -1,7 +1,7 @@
 <template>
   <section class="clientes">
-    <div class="field has-addons">
-      <div class="control" has-icons-left>
+    <div class="column is-7 is-offset-1 ">
+      <div class="field is-horizontal">
         <input
           class="input"
           type="text"
@@ -10,19 +10,28 @@
           v-model="cnpjCpf"
           @input="mask"
         />
-        <span class="icon is-small is-left">
-          <i class="fas fa-"></i>
-        </span>
       </div>
-      <Button @action="searchCnpjCpf" name="Procurar" icon="fa-arrow-right" tipo="is-info is-rounded"/>
-    </div>
-    <div class="field is-horizontal">
-      <div>
-        <router-link to="/clientes/novo">
-          <Button icon="fa-address-book" name="Novo Cliente" tipo="is-info is-outlined"/>
+
+      <div class="buttons is-centered">
+        <button class="button is-info" @click="searchCnpjCpf">
+          <span>
+            Procurar
+          </span>
+          <span class="icon is-small is-left">
+            <i class="fa fa-search"></i>
+          </span>
+        </button>
+        <router-link class="button  is-success" to="/clientes/cadastro">
+          <span>
+            Cadastrar
+          </span>
+          <span class="icon is-small is-left">
+            <i class="fas fa-plus"></i>
+          </span>
         </router-link>
       </div>
     </div>
+
     <TableClient
       class="table-container"
       :clientes="clientes"
@@ -34,14 +43,11 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { useStore } from "@/store";
-import { ADICIONA_CLIENTE, LIMPAR_LISTA } from "@/store/tipo-mutacao";
-import { tipoNotificacao } from "@/interfaces/INotificacao";
 import useNotificador from "@/hooks/notificador";
-import ClienteDataService from "@/services/ClienteDataService";
-import ResponseData from "@/interfaces/ResponseData";
 import validarForm from "@/mixins/validarForm";
 import TableClient from "@/components/TableClient.vue";
-import Button from "@/components/Button.vue";
+import { DEFINIR_CLIENTES } from "@/store/tipo-acoes";
+import Notificacoes from "@/mixins/notificacoes";
 
 export default defineComponent({
   name: "listaClientes",
@@ -52,34 +58,20 @@ export default defineComponent({
       id: "",
     };
   },
-  mounted(){
-    this.store.commit(LIMPAR_LISTA)
-  },
   methods: {
     searchCnpjCpf() {
       this.validations();
-      this.store.commit(LIMPAR_LISTA);
-      ClienteDataService.findByCnpjCpf(this.cnpjCpf.replace(/\D/g, "")).then(
-        (response: ResponseData) => {
-          if (response.data.content[0] === undefined) {
-            this.notificar(
-              tipoNotificacao.FALHA,
-              "find by Cnpj",
-              "CPF/CNPJ " + this.cnpjCpf + " não localizado"
-            );
+      this.store
+        .dispatch(DEFINIR_CLIENTES, this.cnpjCpf.replace(/\D/g, ""))
+        .then((response) => {
+          if (response) {
+            Notificacoes.clienteNotFound(response);
             this.cnpjCpf = "";
-            return;
+          } else {
+            Notificacoes.clientFoundSucess();
+            this.cnpjCpf = "";
           }
-          this.store.commit(ADICIONA_CLIENTE, response.data.content[0]);
-          this.id = response.data.content[0].id;
-          this.notificar(
-            tipoNotificacao.SUCESSO,
-            "Sucesso",
-            "Cliente localizado, pode realizar a edição!"
-          );
-          this.cnpjCpf = "";
-        }
-      );
+        });
     },
     mask() {
       this.cnpjCpf = validarForm.methods.addMask(this.cnpjCpf);
@@ -94,12 +86,12 @@ export default defineComponent({
     const store = useStore();
     const { notificar } = useNotificador();
     return {
-      clientes: computed(() => store.state.clientes),
+      clientes: computed(() => store.state.cliente.clientes),
       store,
       notificar,
     };
   },
-  components: { TableClient, Button },
+  components: { TableClient },
 });
 </script>
 <style scoped>
