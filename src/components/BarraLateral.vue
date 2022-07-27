@@ -5,10 +5,16 @@
     </h1>
     <nav class="panel mt-5">
       <ul>
-        <li >
-          <router-link to="/clientes" class="button is-small is-fullwidth is-info is-outlined">
-            <i class="far fa-user"></i>
-            Clientes
+        <li>
+          <router-link to="/clientes">
+            <button class="button is-small is-fullwidth is-info is-rounded">
+              <span class="icon">
+                <i class="far fa-user"></i>
+              </span>
+              <span>
+                Clientes
+              </span>
+            </button>
           </router-link>
         </li>
       </ul>
@@ -51,6 +57,8 @@ header {
   width: 100%;
   height: 100vh;
   text-align: center;
+  position: sticky;
+  top: 0;
 }
 @media only screen and (max-width: 768px) {
   header {
