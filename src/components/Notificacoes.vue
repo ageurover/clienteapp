@@ -33,7 +33,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      notificacoes: computed(() => store.state.notificacoes),
+      notificacoes: computed(() => store.state.notificacao.notificacoes),
     };
   },
 });
@@ -46,5 +46,11 @@ export default defineComponent({
   width: 400px;
   padding: 8px;
   z-index: 999;
+}
+
+@media screen and (max-width: 818px) {
+  .notificacoes{
+    width: 200px;
+  }
 }
 </style>
