@@ -19,8 +19,10 @@
         <td>{{ cliente.celular }}</td>
         <td>
           <span :v-show="cliente.tipoPJF == tipoCli">
-            <router-link :to="`/clientes/novo/${cliente.id}`" >
-              <Button icon="fa-pencil-alt" tipo="is-info is-outlined is-small is-responsive"/>
+            <router-link :to="`/clientes/cadastro/${cliente.id}`" >
+              <button class="button is-info is-small is-responsive">
+                <i class="fa fa-pencil-alt "></i>
+              </button>
             </router-link>
           </span>
         </td>
@@ -31,7 +33,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Button from "./Button.vue";
 
 export default defineComponent({
     props: {
@@ -42,7 +43,6 @@ export default defineComponent({
             type: String,
         },
     },
-    components: { Button }
 });
 </script>
 
