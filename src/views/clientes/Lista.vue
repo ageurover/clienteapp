@@ -1,6 +1,6 @@
 <template>
   <section class="clientes">
-    <div class="column is-7 is-offset-1 ">
+    <div class="column is-6 is-offset-3">
       <div class="field is-horizontal">
         <input
           class="input"
@@ -13,7 +13,7 @@
       </div>
 
       <div class="buttons is-centered">
-        <button class="button is-info" @click="searchCnpjCpf">
+        <button class="button is-responsive is-info" @click="searchCnpjCpf">
           <span>
             Procurar
           </span>
@@ -21,7 +21,7 @@
             <i class="fa fa-search"></i>
           </span>
         </button>
-        <router-link class="button  is-success" to="/clientes/cadastro">
+        <router-link class="button is-responsive is-success" to="/cadastro">
           <span>
             Cadastrar
           </span>
@@ -31,12 +31,7 @@
         </router-link>
       </div>
     </div>
-
-    <TableClient
-      class="table-container"
-      :clientes="clientes"
-      :tipoCli="tipoCli"
-    />
+    <TableClient :clientes="clientes" :tipoCli="tipoCli" />
   </section>
 </template>
 
