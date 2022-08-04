@@ -55,13 +55,21 @@
     <div class="field is-horizontal">
       <label for="ramoAtividade" class="label">Ramo de Atividade</label>
       <div class="select">
-        <select v-if="cliente.ramoAtividade != 'OUTRO'" class="select" v-model="cliente.ramoAtividade">
+        <select
+          v-if="cliente.ramoAtividade != 'OUTRO'"
+          class="select"
+          v-model="cliente.ramoAtividade"
+        >
           <option v-for="(r, i) in eRamoAtividade" :key="i" :value="r">
             {{ r }}
           </option>
           <option value="OUTRO">OUTRO</option>
         </select>
-        <input type="tex" class="input" v-if="cliente.ramoAtividade == 'OUTRO'" />
+        <input
+          type="tex"
+          class="input"
+          v-if="cliente.ramoAtividade == 'OUTRO'"
+        />
       </div>
     </div>
   </section>
@@ -73,6 +81,7 @@ import { useStore } from "@/store";
 import { computed, defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import { eRamoAtividade } from "@/interfaces/eRamoAtividades";
+import { BUSCAR_CLIENTE_ID } from "@/store/tipo-acoes";
 
 export default defineComponent({
   name: "CapaForm",
@@ -94,9 +103,9 @@ export default defineComponent({
   },
   mounted() {
     if (this.idCli) {
-      setTimeout(() => {
-        this.cliente = this.clientes[0];
-      }, 300);
+      this.store.dispatch(BUSCAR_CLIENTE_ID, this.idCli).then(()=>{
+        this.clientes.forEach(cli => this.cliente =  cli);
+      })
     }
   },
 });
