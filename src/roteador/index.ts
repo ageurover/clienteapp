@@ -10,7 +10,7 @@ const rotas: RouteRecordRaw[] = [
     component: Clientes,
   },
   {
-    path: "/clientes",
+    path: "/",
     component: Clientes,
     children: [
       {
