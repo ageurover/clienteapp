@@ -1,39 +1,26 @@
 <template>
-  <main
-    class="columns is-gapless is-multiline"
-    :class="{ 'modo-escuro': modoEscuroAtivo }"
-  >
-    <div class="column is-one-quarter">
-      <BarraLateral @aoTemaAlterado="trocarTema" />
-    </div>
-    <div class="column is-three-quarter conteudo">
+  <main>
+    <NavBar></NavBar>
+    <div class="conteudo">
       <notificacoes></notificacoes>
-
       <router-view></router-view>
     </div>
+    <Footer></Footer>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import BarraLateral from "./components/BarraLateral.vue";
 import Notificacoes from "./components/Notificacoes.vue";
+import NavBar from "./components/Navbar/NavBar.vue";
+import Footer from "./components/Footer/Footer.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    BarraLateral,
     Notificacoes,
-  },
-  data() {
-    return {
-      modoEscuroAtivo: false,
-    };
-  },
-  methods: {
-    trocarTema(modoEscuroAtivo: boolean) {
-      this.modoEscuroAtivo = modoEscuroAtivo;
-    },
+    NavBar,
+    Footer,
   },
 });
 </script>
@@ -43,14 +30,11 @@ export default defineComponent({
   padding: 1.25rem;
 }
 main {
-  --bg-primario: #fff;
-  --texto-primario: #000;
-}
-main.modo-escuro {
-  --bg-primario: #2b2d42;
-  --texto-primario: #ddd;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 .conteudo {
-  background-color: var(--bg-primario);
+  flex: 1 0 auto;
 }
 </style>
