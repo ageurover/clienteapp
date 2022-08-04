@@ -2,8 +2,16 @@ import IReferencia from "@/interfaces/IReferencia";
 import ResponseData from "@/interfaces/ResponseData";
 import ClienteDataService from "@/services/ClienteDataService";
 import { Estado } from "@/store";
-import { ADICIONAR_REFERENCIA, DEFINIR_REFERENCIAS } from "@/store/tipo-acoes";
-import { ADICIONA_REFERENCIA, DEFINE_REFERENCIAS, LIMPA_LISTA_REFS } from "@/store/tipo-mutacao";
+import {
+  ADICIONAR_REFERENCIA,
+  DEFINIR_REFERENCIAS,
+  LIMPAR_LISTA_REFS,
+} from "@/store/tipo-acoes";
+import {
+  ADICIONA_REFERENCIA,
+  DEFINE_REFERENCIAS,
+  LIMPA_LISTA_REFS,
+} from "@/store/tipo-mutacao";
 import { Module } from "vuex";
 
 export interface EstadoReferencia {
@@ -18,9 +26,9 @@ export const referencia: Module<EstadoReferencia, Estado> = {
     [DEFINE_REFERENCIAS](state, refs: IReferencia[]): void {
       state.referencias = refs;
     },
-    [ADICIONA_REFERENCIA](state, ref: IReferencia): void{
-      state.referencias.push(ref)
-    }
+    [ADICIONA_REFERENCIA](state, ref: IReferencia): void {
+      state.referencias.push(ref);
+    },
   },
   actions: {
     async [DEFINIR_REFERENCIAS]({ commit }, idCli: string) {
@@ -28,8 +36,11 @@ export const referencia: Module<EstadoReferencia, Estado> = {
         commit(DEFINE_REFERENCIAS, r.data.referencias);
       });
     },
-    [ADICIONAR_REFERENCIA]({commit}, ref: IReferencia){
-      commit(ADICIONA_REFERENCIA, ref)
-    }
+    [ADICIONAR_REFERENCIA]({ commit }, ref: IReferencia) {
+      commit(ADICIONA_REFERENCIA, ref);
+    },
+    [LIMPAR_LISTA_REFS]({ commit }) {
+      commit(LIMPA_LISTA_REFS);
+    },
   },
 };
