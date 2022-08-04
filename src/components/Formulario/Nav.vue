@@ -76,8 +76,6 @@ export default defineComponent({
     };
   },
   mounted() {
-    console.log(this.tabs);
-    
     this.store.dispatch(DEFINIR_TABS, eTabs);
     if (this.idCli) {
       this.store
