@@ -14,23 +14,23 @@ import {
   TO_EDIT_CLIENT,
 } from "@/store/tipo-mutacao";
 import {
-  ADICIONAR_CLIENTE,
   ATUALIZAR_CLIENTE,
   BUSCAR_CLIENTE_ID,
   DEFINIR_CLIENTES,
   EDITAR_CLIENTE,
+  LIMPAR_LISTA_CLI,
 } from "@/store/tipo-acoes";
 import ClienteDataService from "@/services/ClienteDataService";
 
 export interface EstadoCliente {
-  clientes: ICliente[];
+  clientes: Array<ICliente>;
   toEditClient: boolean;
 }
 
 export const cliente: Module<EstadoCliente, Estado> = {
   mutations: {
     [LIMPA_LISTA](state): void {
-      state.clientes = []
+      state.clientes = state.clientes?.filter((c) => c.id == "0");
     },
     [ADICIONA_CLIENTE](state, cliente: ICliente): void {
       state.clientes.push(cliente);
@@ -48,15 +48,18 @@ export const cliente: Module<EstadoCliente, Estado> = {
     [DEFINE_CLIENTES](state, clientes: ICliente[]): void {
       state.clientes = clientes;
     },
-    [DEFINE_CLIENTE](state, cliente: ICliente): void {
+    [DEFINE_CLIENTE](state, cliente: ICliente[]): void {
       store.commit(LIMPA_LISTA);
-      state.clientes[0] = cliente;
+      state.clientes = cliente
     },
     [TO_EDIT_CLIENT](state, value: boolean): void {
       state.toEditClient = value;
     },
   },
   actions: {
+    [LIMPAR_LISTA_CLI]({ commit }) {
+      commit(LIMPA_LISTA);
+    },
     async [DEFINIR_CLIENTES]({ commit }, cnpjCpf) {
       const response = await ClienteDataService.findByCnpjCpf(cnpjCpf);
       if (response.data.totalElements != 0) {
@@ -69,16 +72,15 @@ export const cliente: Module<EstadoCliente, Estado> = {
       }
     },
     async [BUSCAR_CLIENTE_ID]({ commit }, id: string) {
-      const response = await ClienteDataService.get(id);      
-      commit(LIMPA_LISTA);
-      commit(DEFINE_CLIENTE, response.data);
+      const response = await ClienteDataService.get(id);
+      commit(DEFINE_CLIENTE, [response.data]);
       commit(DEFINE_REFERENCIAS, response.data.referencias);
-      commit(DEFINE_DOCUMENTOS, response.data.documentos)
+      commit(DEFINE_DOCUMENTOS, response.data.documentos);
     },
-    async [ATUALIZAR_CLIENTE]({commit}, novosDados: ICliente) {
+    async [ATUALIZAR_CLIENTE]({ commit }, novosDados: ICliente) {
       const res = await ClienteDataService.update(novosDados.id, novosDados);
       console.log(res);
-      //commit(ALTERA_CLIENTE)
+      commit(ALTERA_CLIENTE)
     },
     [EDITAR_CLIENTE]({ commit }, value: boolean) {
       commit(TO_EDIT_CLIENT, value);
