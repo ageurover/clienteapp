@@ -11,7 +11,7 @@
     <progress
       class="progress is-small is-primary"
       :value="page + 1"
-      :max="tabs.length + 1"
+      :max="5"
     ></progress>
     <nav class="pagination" role="navigation" aria-label="pagination">
       <button
@@ -24,19 +24,17 @@
         </span>
         <span>Anterior</span>
       </button>
-      <button v-if="page != 4" @click="next" class="button pagination-next">
-        <span>Próxima</span>
-        <span class="icon is-small">
+      <button
+        @click="next"
+        class="button pagination-next"
+        :class="page == 5 ? 'is-info' : ''"
+      >
+        <span v-if="page != 5">Próxima</span>
+        <span v-if="page == 5">Cadastrar</span>
+        <span v-if="page != 5" class="icon is-small">
           <i class="fa fa-arrow-right"></i>
         </span>
-      </button>
-      <button
-        v-if="page == 4"
-        @click="next"
-        class="button pagination-next is-info"
-      >
-        <span>Cadastrar</span>
-        <span class="icon is-small">
+        <span v-if="page == 5" class="icon is-small">
           <i class="fa fa-check"></i>
         </span>
       </button>
@@ -45,23 +43,68 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import ICliente from "@/interfaces/ICliente";
+import Notificacoes from "@/mixins/notificacoes";
+import { useStore } from "@/store";
+import {
+  BUSCAR_CLIENTE_ID,
+  DEFINIR_TABS,
+  EDITAR_CLIENTE,
+} from "@/store/tipo-acoes";
+import { computed, defineComponent } from "vue";
+import { useRoute } from "vue-router";
+import { eTabs } from "@/interfaces/eTabs";
+
 export default defineComponent({
   name: "Nav",
   data() {
     return {
+      cliente: {} as ICliente,
       page: 0,
-      tabs: [
-        "Dados",
-        "Endereco",
-        "Contato",
-        "Referencias",
-        "Documentos",
-        "Autorizacoes",
-      ],
     };
   },
   emits: ["emitPage"],
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    const idCli = route.params.id;
+    return {
+      clientes: computed(() => store.state.cliente.clientes),
+      tabs: computed(() => store.state.tab.tabs),
+      store,
+      idCli,
+    };
+  },
+  mounted() {
+    console.log(this.tabs);
+    
+    this.store.dispatch(DEFINIR_TABS, eTabs);
+    if (this.idCli) {
+      this.store
+        .dispatch(BUSCAR_CLIENTE_ID, this.idCli)
+        .then(() => {
+          this.clientes.forEach((cli) => {
+            this.cliente = cli;
+            if (
+              this.cliente.autorizaConsultaCredito &&
+              this.cliente.autorizaConsultaReferencia
+            ) {
+              this.store.dispatch(DEFINIR_TABS, eTabs);
+            } else {
+              const newTabs = eTabs.filter(
+                (t) => t != "Referências" && t != "Documentos"
+              );
+              this.store.dispatch(DEFINIR_TABS, newTabs);
+            }
+          });
+        })
+        .catch((err) => {
+          Notificacoes.clienteNotFound(err);
+        });
+    } else {
+      this.store.dispatch(EDITAR_CLIENTE, false);
+    }
+  },
   methods: {
     pre() {
       this.page != 0 ? (this.page -= 1) : this.page;
@@ -78,19 +121,6 @@ export default defineComponent({
     emit() {
       this.$emit("emitPage", this.page);
     },
-    /**
-     * resize() {
-      window.addEventListener("load", () => {
-        var largura = window.innerWidth;
-        if (largura < 818) {
-          document.querySelector(".tabs")?.classList.add("is-small");
-        }
-        if (largura >= 818) {
-          document.querySelector(".tabs")?.classList.remove("is-small");
-        }
-      });
-    },
-     */
   },
 });
 </script>
