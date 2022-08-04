@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section @change="alteraAutorizacoes">
     <div class="field is-horizontal">
       <label class="checkbox">
         <input
@@ -7,8 +7,10 @@
           id="autorizaDadosLgpd"
           v-model="cliente.autorizaDadosLgpd"
         />
-        {{ format(eAutorizacoes[0]) }}
-        <button class="button is-small is-black is-inverted">...</button>
+        <span> {{ format(eAutorizacoes[0]) }}</span>
+        <span class="icon has-text-success">
+          <p class="button is-small is-dark is-light is-inverted ">...</p>
+        </span>
       </label>
     </div>
     <div class="field is-horizontal">
@@ -33,7 +35,7 @@
         {{ eAutorizacoes[2] }}
       </label>
     </div>
-    <div class="field is-horizontal">
+    <div class="field is-horizontal" v-if="cliente.tipoPJF == 'PJ'">
       <label class="checkbox">
         <input
           class="checkbox"
@@ -44,7 +46,7 @@
         {{ eAutorizacoes[3] }}
       </label>
     </div>
-    <div class="field is-horizontal">
+    <div class="field is-horizontal" v-if="cliente.tipoPJF == 'PJ'">
       <label class="checkbox">
         <input
           class="checkbox"
@@ -64,6 +66,8 @@ import { useStore } from "@/store";
 import { computed, defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import { eAutorizacoes } from "@/interfaces/eAutorizacoes";
+import { DEFINIR_TABS } from "@/store/tipo-acoes";
+import { eTabs } from "@/interfaces/eTabs";
 
 export default defineComponent({
   name: "AutorizacoesForm",
@@ -72,14 +76,30 @@ export default defineComponent({
       cliente: {} as ICliente,
       state: false,
       eAutorizacoes,
+      newTabs: eTabs,
     };
   },
   methods: {
+    alteraAutorizacoes() {
+      this.cliente.autorizaConsultaCredito &&
+      this.cliente.autorizaConsultaReferencia
+        ? this.alteraTabs(true)
+        : this.alteraTabs(false);
+    },
+    alteraTabs(op: boolean) {
+      if (!op) {
+        this.newTabs = eTabs.filter(
+          (t) => t != "Referências" && t != "Documentos"
+        );
+        this.store.dispatch(DEFINIR_TABS, this.newTabs);
+      } else {
+        this.newTabs = eTabs;
+        this.store.dispatch(DEFINIR_TABS, this.newTabs);
+      }
+    },
     format(nome: string) {
-      console.log(nome.split(' '));
-      
       if (nome.length > 130) {
-        return nome.substring(0, 130) + "...";
+        return nome.substring(0, 130);
       } else {
         return nome;
       }
